@@ -12,6 +12,11 @@
     Artistic License for more details.
 ------------------------------------------------------------------------
 
+========================================================================
+This module is known to exercise a bug in perl 5.6.0.  Don't use that
+version of perl: use 5.005_03, or try 5.6.1.
+========================================================================
+
        *** This is alpha software -- use at your own risks ***
 
 Name           DSLI  Description                                  Info

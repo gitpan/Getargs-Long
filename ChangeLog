@@ -1,3 +1,10 @@
+Thu Mar 15 01:14:21 MET 2001   Raphael Manfredi <Raphael_Manfredi@pobox.com>
+
+. Description:
+
+	Added warning when using perl 5.6.0.  Don't use that version
+	of Perl.  Either use 5.005_03, or try 5.6.1.
+
 Fri Mar  2 19:00:00 MET 2001   Raphael Manfredi <Raphael_Manfredi@pobox.com>
 
 . Description:
