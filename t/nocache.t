@@ -1,7 +1,7 @@
 #!./perl
 
 #
-# $Id: nocache.t,v 0.1 2001/03/01 18:37:19 ram Exp $
+# $Id: nocache.t,v 0.1.1.1 2001/03/20 10:34:50 ram Exp $
 #
 #  Copyright (c) 2000-2001, Raphael Manfredi
 #  
@@ -10,6 +10,9 @@
 #
 # HISTORY
 # $Log: nocache.t,v $
+# Revision 0.1.1.1  2001/03/20 10:34:50  ram
+# patch3: updated all getargs() calls to new interface
+#
 # Revision 0.1  2001/03/01 18:37:19  ram
 # Baseline for first alpha release.
 #
@@ -39,7 +42,7 @@ my $FOO = FOO->make;
 my $BAR = BAR->make;
 
 sub try {
-	my ($x, $y, $z, $t, $o, @other) = xgetargs(\@_,
+	my ($x, $y, $z, $t, $o, @other) = xgetargs(@_,
 		{
 			-strict => 0,
 			-extra => 0,
@@ -55,7 +58,7 @@ sub try {
 }
 
 sub tryw {
-	my ($x, $y, $l, $z, $t) = xgetargs(\@_,
+	my ($x, $y, $l, $z, $t) = xgetargs(@_,
 		'x'		=>	['i'],			# integer, non-mandatory
 		'y'		=>	['ARRAY', ['a', 'b']],		# Type, non-mandatory, default
 		'l'		=>	[],				# anything, non-mandatory

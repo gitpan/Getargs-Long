@@ -15,6 +15,9 @@
 ========================================================================
 This module is known to exercise a bug in perl 5.6.0.  Don't use that
 version of perl: use 5.005_03, or try 5.6.1.
+
+The interface of this module changed between 0.1.2 and 0.1.3, and is
+NOT backward compatible.  That's why it's still called alpha software.
 ========================================================================
 
        *** This is alpha software -- use at your own risks ***
@@ -30,22 +33,22 @@ SYNOPSIS
      use Getargs::Long qw(ignorecase);      # case insensitive
 
      # Simple, args mandatory
-     my ($val, $other) = getargs(\@_, qw(val other));
+     my ($val, $other) = getargs(@_, qw(val other));
 
      # Simple, args optional (in [] means optional)
-     my ($val, $other) = getargs(\@_, [qw(val other)]);
+     my ($val, $other) = getargs(@_, [qw(val other)]);
 
      # Simple with typechecking, args mandatory
-     my ($val, $other) = getargs(\@_, qw(val=Class::X other=ARRAY));
+     my ($val, $other) = getargs(@_, qw(val=Class::X other=ARRAY));
 
      # Simple with typechecking, args optional
-     my ($val, $other) = getargs(\@_, [qw(val=Class::X other=ARRAY)]);
+     my ($val, $other) = getargs(@_, [qw(val=Class::X other=ARRAY)]);
 
      # Faster version, building dedicated argument parsing routine
-     my ($val, $other) = cgetargs(\@_, qw(val other));
+     my ($val, $other) = cgetargs(@_, qw(val other));
 
      # Other cases, use full specs:
-     my ($x, $y, $z, $a, $b, $c) = xgetargs(\@_,
+     my ($x, $y, $z, $a, $b, $c) = xgetargs(@_,
 
         # Non-mandatory, defaults to undef unless specified otherwise
         'x'     => ['i'],                   # integer, no default
@@ -59,10 +62,10 @@ SYNOPSIS
      );
 
      # Extract remaining unparsed args in @extra
-     my ($val, $other, @extra) = getargs(\@_, { -strict => 0 }, qw(val other));
+     my ($val, $other, @extra) = getargs(@_, { -strict => 0 }, qw(val other));
 
      # Alter behaviour of the getargs() routines via switches in hashref
-     my ($val, $other) = getargs(\@_,
+     my ($val, $other) = getargs(@_,
         {
             -strict         => 1,       # unknown switches are fatal
             -ignorecase     => 1,       # override package's global
@@ -82,7 +85,7 @@ by those specifications.
 Example 1 -- All mandatory:
 
    sub f {
-       my ($port, $server) = getargs(\@_,
+       my ($port, $server) = getargs(@_,
            qw(port=i server=HTTP::Server));
    }
 
@@ -95,7 +98,7 @@ Example 1 -- All mandatory:
 Example 2 -- All optional
 
    sub cmd {
-       my ($a, $o) = getargs(\@_, [qw(a o=s)]);
+       my ($a, $o) = getargs(@_, [qw(a o=s)]);
    }
 
    cmd();                      # OK
@@ -107,7 +110,7 @@ Example 2 -- All optional
 Example 3  -- Mixed optional / mandatory
 
    sub f {
-       my ($x, $z) = xgetargs(\@_,
+       my ($x, $z) = xgetargs(@_,
            -x  => 'i',                 # -x mandatory integer
            -z  => ['n', -20.4],        # -z optional, defaults to -20.4
        );
@@ -121,7 +124,7 @@ Example 3  -- Mixed optional / mandatory
 Example 4 -- Parsing options
 
    sub f {
-       my ($x, $z) = xgetargs(\@_,
+       my ($x, $z) = xgetargs(@_,
            { -strict => 0, -ignorecase => 1 },
            -x  => 'i',                 # -x mandatory integer
            -z  => ['n', -20.4],        # -z optional, defaults to -20.4

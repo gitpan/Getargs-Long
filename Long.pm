@@ -1,6 +1,6 @@
 # -*- Mode: perl -*-
 #
-# $Id: Long.pm,v 0.1 2001/03/01 18:37:19 ram Exp $
+# $Id: Long.pm,v 0.1.1.1 2001/03/20 10:33:44 ram Exp $
 #
 #  Copyright (c) 2000-2001, Raphael Manfredi
 #  
@@ -9,6 +9,10 @@
 #
 # HISTORY
 # $Log: Long.pm,v $
+# Revision 0.1.1.1  2001/03/20 10:33:44  ram
+# patch3: changed interface of all getargs() routines
+# patch3: added mention of similar module Params::Validate
+#
 # Revision 0.1  2001/03/01 18:37:19  ram
 # Baseline for first alpha release.
 #
@@ -20,7 +24,7 @@ use strict;
 package Getargs::Long;
 
 use vars qw($VERSION @ISA @EXPORT);
-$VERSION = '0.1';
+$VERSION = '0.103';
 
 use Log::Agent;
 use Data::Dumper;
@@ -75,7 +79,7 @@ my %subcache = ();
 # Optional arguments with no default return undef.  Mandatory arguments cannot
 # be undefined.
 #
-sub getargs { _getargs(scalar(caller), 0, "", @_) }
+sub getargs (\@@) { _getargs(scalar(caller), 0, "", @_) }
 
 #
 # cgetargs
@@ -85,7 +89,7 @@ sub getargs { _getargs(scalar(caller), 0, "", @_) }
 # When called from within an eval, caching is not possible, so this routine
 # must not be called.
 #
-sub cgetargs {
+sub cgetargs (\@@) {
 	my $sub = (caller(1))[3];	# Anomaly in caller(), will also get pkg name
 	logcroak "can't call cgetargs from within an eval"
 		if $sub =~ /^\(eval/;
@@ -98,7 +102,7 @@ sub cgetargs {
 # Like getargs(), but with extended specifications allowing to specify
 # defaults for non-mandatory arguments.
 #
-sub xgetargs { _getargs(scalar(caller), 1, "", @_) }
+sub xgetargs (\@@) { _getargs(scalar(caller), 1, "", @_) }
 
 #
 # cxgetargs
@@ -110,7 +114,7 @@ sub xgetargs { _getargs(scalar(caller), 1, "", @_) }
 # When called from within an eval, caching is not possible, so this routine
 # must not be called.
 #
-sub cxgetargs {
+sub cxgetargs (\@@) {
 	my $sub = (caller(1))[3];	# Anomaly in caller(), will also get pkg name
 	logcroak "can't call cxgetargs from within an eval"
 		if $sub =~ /^\(eval/;
@@ -140,17 +144,19 @@ sub cxgetargs {
 #		<variable>
 #	);
 #
+# With:
+#   $callpkg        Calling package
+#   $extended       Are they using x*getargs()?
+#   $subname        Cache key, if we use it
+#
 # Returns the list of values in the same order given in the definition list
 # (the <variable> part), followed by the extra arguments we did not recognize,
 # with leading '-' removal and transformation to lowercase if ignorecase is on.
 #
 sub _getargs {
-	my $callpkg = shift;			# Calling package
-	my $extended = shift;			# Are they using x*getargs()?
-	my $subname = shift;			# Cache key, if we use it
-	my $args = shift;				# Routine arguments to parse
+	my ($callpkg, $extended, $subname, $args) = splice(@_, 0, 4);
 
-	logcroak "first argument must be a reference to the argument list"
+	logconfess "first argument must be a reference to the argument list"
 		unless ref $args eq 'ARRAY';
 
 	#
@@ -619,22 +625,22 @@ Getargs::Long - parse routine arguments
  use Getargs::Long qw(ignorecase);      # case insensitive
 
  # Simple, args mandatory
- my ($val, $other) = getargs(\@_, qw(val other));
+ my ($val, $other) = getargs(@_, qw(val other));
 
  # Simple, args optional (in [] means optional)
- my ($val, $other) = getargs(\@_, [qw(val other)]);
+ my ($val, $other) = getargs(@_, [qw(val other)]);
 
  # Simple with typechecking, args mandatory
- my ($val, $other) = getargs(\@_, qw(val=Class::X other=ARRAY));
+ my ($val, $other) = getargs(@_, qw(val=Class::X other=ARRAY));
 
  # Simple with typechecking, args optional
- my ($val, $other) = getargs(\@_, [qw(val=Class::X other=ARRAY)]);
+ my ($val, $other) = getargs(@_, [qw(val=Class::X other=ARRAY)]);
 
  # Faster version, building dedicated argument parsing routine
- my ($val, $other) = cgetargs(\@_, qw(val other));
+ my ($val, $other) = cgetargs(@_, qw(val other));
 
  # Other cases, use full specs:
- my ($x, $y, $z, $a, $b, $c) = xgetargs(\@_,
+ my ($x, $y, $z, $a, $b, $c) = xgetargs(@_,
 
     # Non-mandatory, defaults to undef unless specified otherwise
     'x'     => ['i'],                   # integer, no default
@@ -648,10 +654,10 @@ Getargs::Long - parse routine arguments
  );
 
  # Extract remaining unparsed args in @extra
- my ($val, $other, @extra) = getargs(\@_, { -strict => 0 }, qw(val other));
+ my ($val, $other, @extra) = getargs(@_, { -strict => 0 }, qw(val other));
 
  # Alter behaviour of the getargs() routines via switches in hashref
- my ($val, $other) = getargs(\@_,
+ my ($val, $other) = getargs(@_,
     {
         -strict         => 1,       # unknown switches are fatal
         -ignorecase     => 1,       # override package's global
@@ -692,7 +698,7 @@ Since we have an optional parameter I<z> but mandatory I<x> and I<y>, we
 can't use the short form of getargs() and must therefore use xgetargs():
 
  sub f {
-     my ($x, $y ,$z) = xgetargs(\@_,
+     my ($x, $y ,$z) = xgetargs(@_,
          -x => 'i',             # mandatory, integer
          -y => 'i',             # mandatory, integer
          -z => ['i', 0],        # optional integer, defaults to 0
@@ -708,7 +714,7 @@ named specification at call time to avoid having the caller remember the
 exact parameter ordering, we could write:
 
  sub f {
-     my ($x, $y ,$z) = getargs(\@_, qw(x=i y=i z=i));
+     my ($x, $y ,$z) = getargs(@_, qw(x=i y=i z=i));
      # code of f
  }
 
@@ -718,7 +724,7 @@ dynamically to parse the arguments rather than letting getargs() parse the
 same data structures again and again:
 
  sub f {
-     my ($x, $y ,$z) = cgetargs(\@_, qw(x y z));    # 'c' for cached/compiled
+     my ($x, $y ,$z) = cgetargs(@_, qw(x y z));    # 'c' for cached/compiled
      # code of f
  }
 
@@ -729,10 +735,10 @@ be rather useless.
 
 =head1 INTERFACE
 
-All the routines take a mandatory first argument, called I<arglist_ref>,
-which is a reference to an array containing the named arguments for the
-routine (i.e. a succession of I<name> => I<value> tuples).
-It will usually be given as C<\@_>.
+All the routines take a mandatory first argument, called I<arglist>,
+which is the array containing the named arguments for the routine
+(i.e. a succession of I<name> => I<value> tuples).  This array is implicitely
+passed as reference, and will usually be given as C<@_>.
 
 All the routines take an optional I<options> argument which comes in the
 second place.  It is an hash reference containing named options that
@@ -755,7 +761,7 @@ only specify for getargs(), but the signature of cgetargs() is identical.
 
 =over 4
 
-=item getargs I<arglist_ref>, I<options>, I<arg_spec1>, I<arg_spec2>, ...
+=item getargs I<arglist>, I<options>, I<arg_spec1>, I<arg_spec2>, ...
 
 We'll be ignoring the I<options> argument from our discussion.  See the
 L<Options> section for details.
@@ -789,7 +795,7 @@ on inheritance, as you would expect.
 Example:
 
     sub f {
-        my ($port, $server) = getargs(\@_,
+        my ($port, $server) = getargs(@_,
             qw(port=i server=HTTP::Server));
     }
 
@@ -804,7 +810,7 @@ Some calls:
 By default, named argument processing is case-sensitive but there is an
 option to ignore case.
 
-=item getargs I<arglist_ref>, I<options>, I<array_ref>
+=item getargs I<arglist>, I<options>, I<array_ref>
 
 This form specifies that all the formal arguments specified in the
 I<array_ref> are optional.  Think of the '[' and ']' (which you'll probably
@@ -819,7 +825,7 @@ takes one argument, a file name.  To specify the same things for routine
 arguments using getargs():
 
     sub cmd {
-        my ($a, $o) = getargs(\@_, [qw(a o=s)]);
+        my ($a, $o) = getargs(@_, [qw(a o=s)]);
     }
 
 Here however, the C<-a> argument can be anything: we're not specifying
@@ -863,7 +869,7 @@ values to optional arguments.
 
 =over 4
 
-=item xgetargs I<arglist_ref>, I<options>, I<name> => I<type>, ...
+=item xgetargs I<arglist>, I<options>, I<name> => I<type>, ...
 
 We'll be ignoring the I<options> argument from our discussion.  See L<Options>
 for details.
@@ -903,7 +909,7 @@ we evaluated during caching).
 Example:
 
     sub f {
-        my ($x, $z) = cxgetargs(\@_,
+        my ($x, $z) = cxgetargs(@_,
             -x  => 'i',                 # -x mandatory integer
             -z  => ['n', -20.4],        # -z optional, defaults to -20.4
         );
@@ -934,7 +940,7 @@ Options given there must be spelled out with the leading C<-> and are
 case sensitive.  To enable an option, give a true value.  For instance:
 
     sub f {
-        my ($x, $z) = cxgetargs(\@_,
+        my ($x, $z) = cxgetargs(@_,
             { -strict => 0, -ignorecase => 1 },
             -x  => 'i',                 # -x mandatory integer
             -z  => ['n', -20.4],        # -z optional, defaults to -20.4
@@ -952,14 +958,14 @@ The available options are, in alphabetical order:
 Whether to report extra unknown arguments at the end of the argument list.
 Example:
 
-    my ($x, $y, @extra) = getargs(\@_,
+    my ($x, $y, @extra) = getargs(@_,
         { -extra => 1, -strict => 0 }, qw(x y));
 
 Your setting is forced to false when C<-strict> is true.  The default
 value is the negation of the boolean C<-strict> setting, which means
 the above can be rewritten as:
 
-    my ($x, $y, @extra) = getargs(\@_, { -strict => 0 }, qw(x y));
+    my ($x, $y, @extra) = getargs(@_, { -strict => 0 }, qw(x y));
 
 which will implicitely set -extra to be true.  This is usually what you
 want when not strict, i.e. get at the other parameters.  Assuming we
@@ -1019,13 +1025,19 @@ take arguments the way C<Getopt::Long> does to cope with this ordering
 problem (but it forces to spell out variables twice -- once for declaration,
 and once for specifying a pointer to it).
 
+=head1 RELATED MODULE
+
+See L<Params::Validate> for another take at parameter validation.  It is
+a completely independant module, developped by Dave Rolsky, which may
+also interest you.  Its interface and purpose are different though.
+
 =head1 AUTHOR
 
 Raphael Manfredi F<E<lt>Raphael_Manfredi@pobox.comE<gt>>
 
 =head1 SEE ALSO
 
-Log::Agent(3).
+Log::Agent(3), Params::Validate(3)
 
 =cut
 

@@ -1,7 +1,7 @@
 #!./perl
 
 #
-# $Id: getargs.t,v 0.1 2001/03/01 18:37:19 ram Exp $
+# $Id: getargs.t,v 0.1.1.1 2001/03/20 10:34:49 ram Exp $
 #
 #  Copyright (c) 2000-2001, Raphael Manfredi
 #  
@@ -10,6 +10,9 @@
 #
 # HISTORY
 # $Log: getargs.t,v $
+# Revision 0.1.1.1  2001/03/20 10:34:49  ram
+# patch3: updated all getargs() calls to new interface
+#
 # Revision 0.1  2001/03/01 18:37:19  ram
 # Baseline for first alpha release.
 #
@@ -37,12 +40,12 @@ my $FOO = FOO->make;
 my $BAR = BAR->make;
 
 sub try {
-	my ($x, $y, $z, $t) = getargs(\@_, qw(x=i y=ARRAY z t=FOO));
+	my ($x, $y, $z, $t) = getargs(@_, qw(x=i y=ARRAY z t=FOO));
 	return ($x, $y, $z, $t);
 }
 
 sub tryw {
-	my ($x, $y, $z, $t) = getargs(\@_, [qw(x=i y=ARRAY z t=FOO)]);
+	my ($x, $y, $z, $t) = getargs(@_, [qw(x=i y=ARRAY z t=FOO)]);
 	return ($x, $y, $z, $t);
 }
 

@@ -1,7 +1,7 @@
 #!./perl
 
 #
-# $Id: case.t,v 0.1 2001/03/01 18:37:19 ram Exp $
+# $Id: case.t,v 0.1.1.1 2001/03/20 10:34:48 ram Exp $
 #
 #  Copyright (c) 2000-2001, Raphael Manfredi
 #  
@@ -10,6 +10,9 @@
 #
 # HISTORY
 # $Log: case.t,v $
+# Revision 0.1.1.1  2001/03/20 10:34:48  ram
+# patch3: updated all getargs() calls to new interface
+#
 # Revision 0.1  2001/03/01 18:37:19  ram
 # Baseline for first alpha release.
 #
@@ -26,7 +29,7 @@ package SENSITIVE;
 use Getargs::Long;
 
 sub f {
-	my ($x, $X) = getargs(\@_, { -strict => 0 }, qw(x X));
+	my ($x, $X) = getargs(@_, { -strict => 0 }, qw(x X));
 	return ($x, $X);
 }
 
@@ -35,7 +38,7 @@ package INSENSITIVE;
 use Getargs::Long qw(ignorecase);
 
 sub f {
-	my ($x, $Y) = getargs(\@_, { -strict => 0 }, qw(x Y));
+	my ($x, $Y) = getargs(@_, { -strict => 0 }, qw(x Y));
 	return ($x, $Y);
 }
 
@@ -44,7 +47,7 @@ package OPTION;
 use Getargs::Long;
 
 sub f {
-	my ($x, $Y) = getargs(\@_, { -strict => 0, -ignorecase => 1 }, qw(x Y));
+	my ($x, $Y) = getargs(@_, { -strict => 0, -ignorecase => 1 }, qw(x Y));
 	return ($x, $Y);
 }
 

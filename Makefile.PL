@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.PL,v 0.1.1.1 2001/03/15 00:13:33 ram Exp $
+# $Id: Makefile.PL,v 0.1.1.2 2001/03/20 10:33:58 ram Exp $
 #
 #  Copyright (c) 2000-2001, Raphael Manfredi
 #  
@@ -8,6 +8,9 @@
 #
 # HISTORY
 # $Log: Makefile.PL,v $
+# Revision 0.1.1.2  2001/03/20 10:33:58  ram
+# patch3: added warning about interface change
+#
 # Revision 0.1.1.1  2001/03/15 00:13:33  ram
 # patch2: added warning when using perl 5.6.0
 #
@@ -24,6 +27,16 @@ print <<EOM if $] eq "5.006";
 *************************************************
 * Will raise a bug in Perl 5.6.0 -- see REAMDE  *
 *************************************************
+
+EOM
+
+eval "require Getargs::Long";
+print <<EOM if $@ eq "" && $Getargs::Long::VERSION < 0.103;
+
+********************************************************
+* WARNING: The interface changed at 0.1.3              *
+*          You will need to update your client modules *
+********************************************************
 
 EOM
 

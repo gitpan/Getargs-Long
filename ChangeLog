@@ -1,3 +1,32 @@
+Tue Mar 20 11:37:54 MET 2001   Raphael Manfredi <Raphael_Manfredi@pobox.com>
+
+. Description:
+
+	Version 0.1.3.
+
+	Changed interface of all getargs() routines.  This change is
+	NOT backward compatible, but this is the privilege of still
+	being at the alpha stage...  Previous calls were made as:
+
+	    getargs(\@_, ...)
+
+	and must now be written as:
+
+	    getargs (@_, ...)
+
+	with an implicit reference being taken, via Perl prototyping.
+
+	Added mention of similar module Params::Validate.  His author
+	contacted me to mention it, and apparently we independently
+	invented the same thing, albeit with slight different goals
+	and interfaces.
+
+	Added warning about interface change during the run of
+	Makefile.PL if a previous incompatible version is detected.
+
+	Updated all getargs() calls to new interface in the regression
+	test suite.
+
 Thu Mar 15 01:14:21 MET 2001   Raphael Manfredi <Raphael_Manfredi@pobox.com>
 
 . Description:
