@@ -24,7 +24,13 @@ use strict;
 package Getargs::Long;
 
 use vars qw($VERSION @ISA @EXPORT);
-$VERSION = '0.103';
+$VERSION = '1.0.0';
+
+BEGIN
+{
+  die "This module is known to exercise a bug in 5.6.0. Please upgrade your perl.\n"
+    if $] eq '5.006';
+}
 
 use Log::Agent;
 use Data::Dumper;
@@ -617,7 +623,7 @@ __END__
 
 =head1 NAME
 
-Getargs::Long - parse routine arguments
+Getargs::Long - Named subroutine arguments, with optional type checking
 
 =head1 SYNOPSIS
 
@@ -684,7 +690,7 @@ The C<Log::Agent> module is used to report errors, which leaves to the
 application the choice of the final logging method: to a file, to
 STDERR, or to syslog.
 
-=head1 EXAMPLE
+=head1 EXAMPLES
 
 Before going through the interface specification, a little example will
 help illustrate both caller and callee sides.  Let's write a routine
@@ -732,6 +738,60 @@ If you call f() with an improper argument, logcroak() will be called to
 issue an exception from the persepective of the caller, i.e. pointing to the
 place f() is called instead of within f() at the getargs() call, which would
 be rather useless.
+
+Here are some more examples:
+
+Example 1 -- All mandatory:
+
+   sub f {
+       my ($port, $server) = getargs(@_,
+           qw(port=i server=HTTP::Server));
+   }
+
+   f(-server => $server, port => 80);  # or -port, since - is optional
+   f(port => 80, server => $server);
+   f(server => $server);               # WRONG: missing mandatory -port
+   f(server => 80, port => 80);        # WRONG: -server not an HTTP::Server
+   f(server => undef, port => 80);     # WRONG: -server cannot be undef
+
+Example 2 -- All optional
+
+   sub cmd {
+       my ($a, $o) = getargs(@_, [qw(a o=s)]);
+   }
+
+   cmd();                      # OK
+   cmd(-a => undef);           # OK -a accepts anything, even undef
+   cmd(-a => 1, -o => "..");   # OK
+   cmd(-a => 1, -o => undef);  # WRONG: -o does not accept undef
+   cmd(-x => 1);               # WRONG: -x is not a known argument name
+
+Example 3  -- Mixed optional / mandatory
+
+   sub f {
+       my ($x, $z) = xgetargs(@_,
+           -x  => 'i',                 # -x mandatory integer
+           -z  => ['n', -20.4],        # -z optional, defaults to -20.4
+       );
+   }
+
+   f(x => 1, z => {});     # WRONG: z is not a numerical value
+   f(z => 1, x => -2);     # OK
+   f(-z => 1);             # WRONG: mandatory x is missing
+   f(-z => undef);         # WRONG: z cannot be undef
+
+Example 4 -- Parsing options
+
+   sub f {
+       my ($x, $z) = xgetargs(@_,
+           { -strict => 0, -ignorecase => 1 },
+           -x  => 'i',                 # -x mandatory integer
+           -z  => ['n', -20.4],        # -z optional, defaults to -20.4
+       );
+   }
+
+   f(x => 1, foo => {});   # OK, -foo ignored since not strict
+   f(-X => 1);             # OK, -X actually specifies -x with ignorecase
 
 =head1 INTERFACE
 

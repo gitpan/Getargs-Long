@@ -1,53 +1,30 @@
-#
-# $Id: Makefile.PL,v 0.1.1.2 2001/03/20 10:33:58 ram Exp $
-#
-#  Copyright (c) 2000-2001, Raphael Manfredi
-#  
-#  You may redistribute only under the terms of the Artistic License,
-#  as specified in the README file that comes with the distribution.
-#
-# HISTORY
-# $Log: Makefile.PL,v $
-# Revision 0.1.1.2  2001/03/20 10:33:58  ram
-# patch3: added warning about interface change
-#
-# Revision 0.1.1.1  2001/03/15 00:13:33  ram
-# patch2: added warning when using perl 5.6.0
-#
-# Revision 0.1  2001/03/01 18:37:19  ram
-# Baseline for first alpha release.
-#
-# $EndLog$
-#
+#!/usr/bin/perl
 
-use ExtUtils::MakeMaker;
+use strict;
+use inc::Module::Install;
 
-print <<EOM if $] eq "5.006";
+die "This module is known to exercise a bug in 5.6.0. Please upgrade your perl.\n"
+  if $] eq '5.006';
 
-*************************************************
-* Will raise a bug in Perl 5.6.0 -- see REAMDE  *
-*************************************************
+Check_Custom_Installation();
 
-EOM
+print "\n", '-'x78, "\n\n";
 
-eval "require Getargs::Long";
-print <<EOM if $@ eq "" && $Getargs::Long::VERSION < 0.103;
+name            ('Getargs-Long');
+author          ('David Coppit <david@coppit.org>');
+abstract_from   ('lib/Getargs/Long.pm');
+version_from    ('lib/Getargs/Long.pm');
+license         ('gpl');
 
-********************************************************
-* WARNING: The interface changed at 0.1.3              *
-*          You will need to update your client modules *
-********************************************************
+requires        (
+                  'Log::Agent' => '0.105',
+                );
 
-EOM
+include         ('ExtUtils/AutoInstall.pm');
+auto_install    ( -default => 0 );
 
-WriteMakefile(
-    'NAME'	=> 'Getargs::Long',
-    'VERSION_FROM' => 'Long.pm', # finds $VERSION
-	'PREREQ_PM' => {
-		'Log::Agent'		=> '0.105',
-	},
-    'LIBS'	=> [''],		# e.g., '-lm' 
-    'DEFINE'	=> '',		# e.g., '-DHAVE_SOMETHING' 
-    'INC'	=> '',			# e.g., '-I/usr/include/other' 
-);
+WriteAll();
 
+print "\n", '-'x78, "\n\n";
+
+exit;
