@@ -1,5 +1,13 @@
+Version 1.1000: Tue Dec 21 2004
+- Fixed version numbers, which were incompatible with some modules. (Thanks to
+  Tassilo von Parseval <tassilo.von.parseval@rwth-aachen.de> for the bug
+  report)
+- Removed custom installation prompt.
+- Cleaned up documentation a bit.
+
 Version 1.0.1: Thu Sep 16 2004
 - Added missing inc/ dependency
+- Switched to Test::More for better test reporting
 
 Version 1.0.0: Wed Sep 15 2004
 - David Coppit <david@coppit.org> is the new maintainer.

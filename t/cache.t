@@ -1,7 +1,7 @@
-#!./perl
+#!/usr/bin/perl
 
 #
-# $Id: cache.t,v 0.1.1.1 2001/03/20 10:34:45 ram Exp $
+# $Id: cache.t,v 1.1.1.1 2004/09/22 17:32:58 coppit Exp $
 #
 #  Copyright (c) 2000-2001, Raphael Manfredi
 #  
@@ -10,6 +10,9 @@
 #
 # HISTORY
 # $Log: cache.t,v $
+# Revision 1.1.1.1  2004/09/22 17:32:58  coppit
+# initial import
+#
 # Revision 0.1.1.1  2001/03/20 10:34:45  ram
 # patch3: updated all getargs() calls to new interface
 #
@@ -19,14 +22,12 @@
 # $EndLog$
 #
 
-print "1..17\n";
+use Getargs::Long qw(ignorecase);
+use Test::More tests => 19;
 
 require 't/code.pl';
-sub ok;
 
 ## same test case as t/nocache.t, only with c*() routines.
-
-use Getargs::Long qw(ignorecase);
 
 package BAR;
 
@@ -76,43 +77,45 @@ my @args;
 
 @a = try(-o => -2, -t => $FOO, -Other => 2, ONE => 3);
 ($x, $y, $z, $t, $o) = @{$a[0]};
-ok 1, $x == 1;
-ok 2, ref $y eq 'ARRAY' && $y->[0] eq 'a';
-ok 3, !defined $z;
-ok 4, ref $t eq 'FOO';
-ok 5, $o == -2;
+ok($x);
+is(ref $y, 'ARRAY');
+is($y->[0],'a');
+ok(!defined $z);
+is(ref $t,'FOO');
+is($o,-2);
 
 @other = @{$a[1]};
-ok 6, @other == 0;
+is(scalar @other,0);
 
 @args = @{$a[2]};
-ok 7, @args == 4;
-ok 8, "@args" eq "-Other 2 ONE 3";
+is(@args,4);
+is("@args","-Other 2 ONE 3");
 
 eval { try(-t => $FOO) };
-ok 9, $@ =~ /\bargument 'o' missing\b/;
+like($@,qr/\bargument 'o' missing\b/);
 
 @a = try(-o => 1, -z => 'z', y => [], x => 5);
 ($x, $y, $z, $t, $o) = @{$a[0]};
-ok 10, $x == 5;
-ok 11, $z eq 'z';
-ok 12, ref $y eq 'ARRAY' && @$y == 0;
+is($x,5);
+is($z,'z');
+is(ref $y,'ARRAY');
+is(scalar @$y,0);
 
 eval { try(-o => undef, -z => 'z', y => [], x => 5) };
-ok 13, $@ =~ /'o' cannot be undef\b/;
+like($@, qr/'o' cannot be undef\b/);
 
 eval { tryw(-Z => 'BIG Z', y => [], x => 5) };
-ok 14, $@ =~ /\bargument 't' missing\b/;
+like($@,qr/\bargument 't' missing\b/);
 
 ($x, $y, $z, $t) = tryw(-Z => 'BIG Z', y => [], x => 5, -t => $FOO);
-ok 15, ref $t eq 'FOO';
+is(ref $t,'FOO');
 
 eval { tryw(-T => 1, -Z => 'BIG Z', y => [], x => 5) };
-ok 16, $@ =~ /'t' must be of type BAR but/;
+like($@,qr/'t' must be of type BAR but/);
 
 eval {
 	tryw(-T => $BAR, -Z => 'BIG Z', y => [], x => 5,
 		-ExtraArg => 'extra-VALUE')
 };
-ok 17, $@ =~ /\bswitch: -extraarg\b/;
+like($@,qr/\bswitch: -extraarg\b/);
 

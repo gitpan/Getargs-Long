@@ -1,7 +1,7 @@
 #!./perl
 
 #
-# $Id: getargs.t,v 0.1.1.1 2001/03/20 10:34:49 ram Exp $
+# $Id: getargs.t,v 1.1.1.1 2004/09/22 17:32:58 coppit Exp $
 #
 #  Copyright (c) 2000-2001, Raphael Manfredi
 #  
@@ -10,6 +10,9 @@
 #
 # HISTORY
 # $Log: getargs.t,v $
+# Revision 1.1.1.1  2004/09/22 17:32:58  coppit
+# initial import
+#
 # Revision 0.1.1.1  2001/03/20 10:34:49  ram
 # patch3: updated all getargs() calls to new interface
 #
@@ -19,12 +22,10 @@
 # $EndLog$
 #
 
-print "1..12\n";
+use Getargs::Long;
+use Test::More tests => 12;
 
 require 't/code.pl';
-sub ok;
-
-use Getargs::Long;
 
 package BAR;
 
@@ -52,26 +53,26 @@ sub tryw {
 my ($x, $y, $z, $t);
 
 eval { try(-x => -2, -t => $FOO, -Other => 1, -y => [], -z => undef) };
-ok 1, $@ =~ /switch: -Other\b/;
+like($@,qr/switch: -Other\b/);
 
 eval { try(-x => -2, -t => $FOO, -Y => [], -z => undef) };
-ok 2, $@ =~ /\bargument 'y' missing\b/;
+like($@,qr/\bargument 'y' missing\b/);
 
 ($x, $y, $z, $t) = try(-x => -2, -t => $FOO, -y => [qw(A C)], -z => undef);
-ok 3, $x == -2;
-ok 4, ref $y eq 'ARRAY' && $y->[1] eq 'C';
-ok 5, !defined $z;
-ok 6, ref $t eq 'FOO';
+is($x,-2);
+is(ref $y eq 'ARRAY' && $y->[1] eq 'C',1);
+ok(!defined $z);
+is(ref $t,'FOO');
 
 eval { tryw(-x => -2, -t => $FOO, -Other => 1, -y => [], -z => undef) };
-ok 7, $@ =~ /switch: -Other\b/;
+like($@,qr/switch: -Other\b/);
 
 eval { tryw(-x => -2, -t => $FOO, -Y => [], -z => undef) };
-ok 8, $@ =~ /switch: -Y\b/;
+like($@,qr/switch: -Y\b/);
 
 ($x, $y, $z, $t) = tryw(-t => $FOO, -z => []);
-ok 9, !defined $x;
-ok 10, !defined $y;
-ok 11, ref $z eq 'ARRAY';
-ok 12, ref $t eq ref $FOO;
+ok(!defined $x);
+ok(!defined $y);
+is(ref $z,'ARRAY');
+is(ref $t,ref $FOO);
 

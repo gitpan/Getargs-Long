@@ -1,7 +1,7 @@
 #!./perl
 
 #
-# $Id: case.t,v 0.1.1.1 2001/03/20 10:34:48 ram Exp $
+# $Id: case.t,v 1.1.1.1 2004/09/22 17:32:58 coppit Exp $
 #
 #  Copyright (c) 2000-2001, Raphael Manfredi
 #  
@@ -10,6 +10,9 @@
 #
 # HISTORY
 # $Log: case.t,v $
+# Revision 1.1.1.1  2004/09/22 17:32:58  coppit
+# initial import
+#
 # Revision 0.1.1.1  2001/03/20 10:34:48  ram
 # patch3: updated all getargs() calls to new interface
 #
@@ -19,10 +22,9 @@
 # $EndLog$
 #
 
-print "1..9\n";
+use Test::More tests => 9;
 
 require 't/code.pl';
-sub ok;
 
 package SENSITIVE;
 
@@ -56,17 +58,17 @@ package main;
 my @a;
 
 @a = SENSITIVE::f(-x => 1, -X => 2);
-ok 1, @a == 2;
-ok 2, $a[0] == 1;
-ok 3, $a[1] == 2;
+is(@a,2);
+is($a[0],1);
+is($a[1],2);
 
 @a = INSENSITIVE::f(-x => 1, -y => 2);
-ok 4, @a == 2;
-ok 5, $a[0] == 1;
-ok 6, $a[1] == 2;
+is(@a,2);
+is($a[0],1);
+is($a[1],2);
 
 @a = OPTION::f(-x => 1, -y => 2);
-ok 7, @a == 2;
-ok 8, $a[0] == 1;
-ok 9, $a[1] == 2;
+is(@a,2);
+is($a[0],1);
+is($a[1],2);
 

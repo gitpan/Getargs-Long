@@ -1,6 +1,6 @@
 # -*- Mode: perl -*-
 #
-# $Id: Long.pm,v 0.1.1.1 2001/03/20 10:33:44 ram Exp $
+# $Id: Long.pm,v 1.1.1.1 2004/09/22 17:32:58 coppit Exp $
 #
 #  Copyright (c) 2000-2001, Raphael Manfredi
 #  
@@ -9,6 +9,9 @@
 #
 # HISTORY
 # $Log: Long.pm,v $
+# Revision 1.1.1.1  2004/09/22 17:32:58  coppit
+# initial import
+#
 # Revision 0.1.1.1  2001/03/20 10:33:44  ram
 # patch3: changed interface of all getargs() routines
 # patch3: added mention of similar module Params::Validate
@@ -24,7 +27,7 @@ use strict;
 package Getargs::Long;
 
 use vars qw($VERSION @ISA @EXPORT);
-$VERSION = '1.0.1';
+$VERSION = sprintf "%d.%02d%02d", q/1.10.0/ =~ /(\d+)/g;
 
 BEGIN
 {

@@ -1,5 +1,5 @@
 #
-# $Id: code.pl,v 0.1.1.1 2001/03/02 17:59:48 ram Exp $
+# $Id: code.pl,v 1.1.1.1 2004/09/22 17:32:58 coppit Exp $
 #
 #  Copyright (c) 2000-2001, Raphael Manfredi
 #  
@@ -8,6 +8,9 @@
 #
 # HISTORY
 # $Log: code.pl,v $
+# Revision 1.1.1.1  2004/09/22 17:32:58  coppit
+# initial import
+#
 # Revision 0.1.1.1  2001/03/02 17:59:48  ram
 # patch1: added.
 #
@@ -16,12 +19,6 @@
 #
 # $EndLog$
 #
-
-sub ok {
-	my ($num, $ok) = @_;
-	print "not " unless $ok;
-	print "ok $num\n";
-}
 
 sub contains {
 	my ($file, $pattern) = @_;
