@@ -1,0 +1,9 @@
+README                     The main README file
+MANIFEST                   This shipping list
+ChangeLog                  List of changes
+Long.pm                    The Getopt::Long module
+Makefile.PL                Generic Makefile template
+t/cache.t                  Test cxgetargs()
+t/case.t                   Test qw(ignorecase)
+t/getargs.t                Test simple getargs()
+t/nocache.t                Test xgetargs()

@@ -1,0 +1,130 @@
+                          Getargs::Long 0.1
+               Copyright (c) 2000-2001, Raphael Manfredi
+
+------------------------------------------------------------------------
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the Artistic License, a copy of which can be
+    found with perl.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    Artistic License for more details.
+------------------------------------------------------------------------
+
+       *** This is alpha software -- use at your own risks ***
+
+Name           DSLI  Description                                  Info
+-----------    ----  -------------------------------------------- -----
+Getargs::
+::Long         adpf  Parses long function args f(-arg => value)   RAM
+
+SYNOPSIS
+
+     use Getargs::Long;                     # case sensitive
+     use Getargs::Long qw(ignorecase);      # case insensitive
+
+     # Simple, args mandatory
+     my ($val, $other) = getargs(\@_, qw(val other));
+
+     # Simple, args optional (in [] means optional)
+     my ($val, $other) = getargs(\@_, [qw(val other)]);
+
+     # Simple with typechecking, args mandatory
+     my ($val, $other) = getargs(\@_, qw(val=Class::X other=ARRAY));
+
+     # Simple with typechecking, args optional
+     my ($val, $other) = getargs(\@_, [qw(val=Class::X other=ARRAY)]);
+
+     # Faster version, building dedicated argument parsing routine
+     my ($val, $other) = cgetargs(\@_, qw(val other));
+
+     # Other cases, use full specs:
+     my ($x, $y, $z, $a, $b, $c) = xgetargs(\@_,
+
+        # Non-mandatory, defaults to undef unless specified otherwise
+        'x'     => ['i'],                   # integer, no default
+        'y'     => ['ARRAY', ['a', 'b']],   # Has a default
+        'z'     => [],                      # No typecheck, can be anything
+
+        # Mandatory arguments
+        'a'     => 'i',                     # integer (scalar)
+        'b'     => 'TYPE',                  # TYPE or any heir of TYPE
+        'c'     => undef,                   # unspecified type but mandatory
+     );
+
+     # Extract remaining unparsed args in @extra
+     my ($val, $other, @extra) = getargs(\@_, { -strict => 0 }, qw(val other));
+
+     # Alter behaviour of the getargs() routines via switches in hashref
+     my ($val, $other) = getargs(\@_,
+        {
+            -strict         => 1,       # unknown switches are fatal
+            -ignorecase     => 1,       # override package's global
+            -inplace        => 1,       # edit @_ inplace: remove parsed args
+            -extra          => 0,       # suppress return of extra arguments
+        },
+        qw(val other)
+     );
+
+DESCRIPTION
+
+Instead of duplicating the manual page, and because examples are better than
+a long explaination, here are examples for common cases, showing the routine
+argument sepecification and how various calling sequences are interpreted
+by those specifications.
+
+Example 1 -- All mandatory:
+
+   sub f {
+       my ($port, $server) = getargs(\@_,
+           qw(port=i server=HTTP::Server));
+   }
+
+   f(-server => $server, port => 80);  # or -port, since - is optional
+   f(port => 80, server => $server);
+   f(server => $server);               # WRONG: missing mandatory -port
+   f(server => 80, port => 80);        # WRONG: -server not an HTTP::Server
+   f(server => undef, port => 80);     # WRONG: -server cannot be undef
+
+Example 2 -- All optional
+
+   sub cmd {
+       my ($a, $o) = getargs(\@_, [qw(a o=s)]);
+   }
+
+   cmd();                      # OK
+   cmd(-a => undef);           # OK -a accepts anything, even undef
+   cmd(-a => 1, -o => "..");   # OK
+   cmd(-a => 1, -o => undef);  # WRONG: -o does not accept undef
+   cmd(-x => 1);               # WRONG: -x is not a known argument name
+
+Example 3  -- Mixed optional / mandatory
+
+   sub f {
+       my ($x, $z) = xgetargs(\@_,
+           -x  => 'i',                 # -x mandatory integer
+           -z  => ['n', -20.4],        # -z optional, defaults to -20.4
+       );
+   }
+
+   f(x => 1, z => {});     # WRONG: z is not a numerical value
+   f(z => 1, x => -2);     # OK
+   f(-z => 1);             # WRONG: mandatory x is missing
+   f(-z => undef);         # WRONG: z cannot be undef
+
+Example 4 -- Parsing options
+
+   sub f {
+       my ($x, $z) = xgetargs(\@_,
+           { -strict => 0, -ignorecase => 1 },
+           -x  => 'i',                 # -x mandatory integer
+           -z  => ['n', -20.4],        # -z optional, defaults to -20.4
+       );
+   }
+
+   f(x => 1, foo => {});   # OK, -foo ignored since not strict
+   f(-X => 1);             # OK, -X actually specifies -x with ignorecase
+
+-- Raphael Manfredi <Raphael_Manfredi@pobox.com>
+
