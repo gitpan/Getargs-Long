@@ -24,7 +24,7 @@ use strict;
 package Getargs::Long;
 
 use vars qw($VERSION @ISA @EXPORT);
-$VERSION = '1.0.0';
+$VERSION = '1.0.1';
 
 BEGIN
 {

@@ -21,8 +21,8 @@ requires        (
                 );
 
 include         ('ExtUtils/AutoInstall.pm');
-auto_install    ( -default => 0 );
 
+auto_install    ( );
 WriteAll();
 
 print "\n", '-'x78, "\n\n";

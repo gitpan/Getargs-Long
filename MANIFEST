@@ -15,6 +15,7 @@ t/nocache.t
 t/code.pl
 
 # Module::Install extensions
+inc/File/HomeDir.pm
 inc/ExtUtils/AutoInstall.pm
 inc/Module/Install/AutoInstall.pm
 inc/Module/Install/Base.pm

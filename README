@@ -9,12 +9,8 @@ common cases of all-mandatory and all-optional parameter lists.
 
 NEW IN THIS VERSION
 
-Version 1.0.0: Wed Sep 15 2004
-- David Coppit <david@coppit.org> is the new maintainer.
-- License changed to GPL
-- Changed Makefile.PL to use Module::Install
-- Version numbering changed
-- Added a check for the perl version number
+Version 1.0.1: Thu Sep 16 2004
+- Added missing inc/ dependency
 
 
 MODULE DEPENDENCIES

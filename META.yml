@@ -1,10 +1,11 @@
 name: Getargs-Long
-version: 1.0.0
+version: 1.0.1
 abstract: Named subroutine arguments, with optional type checking
 author: David Coppit <david@coppit.org>
 license: gpl
 distribution_type: module
 requires:
+  perl: 5.004
   Log::Agent: 0.105
 no_index:
   directory:
