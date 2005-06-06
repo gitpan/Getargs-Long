@@ -1,27 +1,5 @@
 #!/usr/bin/perl
 
-#
-# $Id: cache.t,v 1.1.1.1 2004/09/22 17:32:58 coppit Exp $
-#
-#  Copyright (c) 2000-2001, Raphael Manfredi
-#  
-#  You may redistribute only under the terms of the Artistic License,
-#  as specified in the README file that comes with the distribution.
-#
-# HISTORY
-# $Log: cache.t,v $
-# Revision 1.1.1.1  2004/09/22 17:32:58  coppit
-# initial import
-#
-# Revision 0.1.1.1  2001/03/20 10:34:45  ram
-# patch3: updated all getargs() calls to new interface
-#
-# Revision 0.1  2001/03/01 18:37:19  ram
-# Baseline for first alpha release.
-#
-# $EndLog$
-#
-
 use Getargs::Long qw(ignorecase);
 use Test::More tests => 19;
 

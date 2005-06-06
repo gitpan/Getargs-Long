@@ -1,5 +1,5 @@
 name: Getargs-Long
-version: 1.1000
+version: 1.1001
 abstract: Named subroutine arguments, with optional type checking
 author: David Coppit <david@coppit.org>
 license: gpl
